@@ -40,8 +40,18 @@
         socket.on('bot_stats', (data) => {
             document.getElementById('hp').innerText = data.health;
             document.getElementById('food').innerText = data.food;
-            document.getElementById('inv').innerText = data.inventory;
             document.getElementById('time').innerText = data.time;
+            
+            // Inventory aur Location dikhane ke liye
+            const invElement = document.getElementById('inv');
+            if (data.inventoryList && data.inventoryList.length > 0) {
+                invElement.innerText = data.inventoryList.join(", ");
+            } else {
+                invElement.innerText = "Empty";
+            }
+            
+            // Extra Tip: Agar aap coordinates bhi dikhana chahte hain, 
+            // toh ek naya div 'pos' id ke saath stats mein add kar sakte hain.
         });
 
         socket.on('game_chat', (data) => {
