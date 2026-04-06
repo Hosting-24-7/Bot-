@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bot Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; }
+        .stat-card { background: #333; padding: 15px; margin: 10px; border-radius: 10px; display: inline-block; min-width: 120px; }
+        #chat-box { height: 200px; overflow-y: scroll; background: #000; text-align: left; padding: 10px; margin: 20px; border: 1px solid #555; }
+        .controls button { padding: 15px 25px; font-size: 18px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Minecraft Bot Dashboard</h1>
+    
+    <div id="stats">
+        <div class="stat-card">❤️ Health: <span id="hp">0</span></div>
+        <div class="stat-card">🍖 Food: <span id="food">0</span></div>
+        <div class="stat-card">📦 Items: <span id="inv">0</span></div>
+        <div class="stat-card">🕒 Time: <span id="time">0</span></div>
+    </div>
+
+    <div id="chat-box"></div>
+    <input type="text" id="msgInput" placeholder="Type message...">
+    <button onclick="sendChat()">Send</button>
+
+    <div class="controls" style="margin-top: 20px;">
+        <h3>Remote Play</h3>
+        <button onclick="move('forward')">⬆️</button><br>
+        <button onclick="move('left')">⬅️</button>
+        <button onclick="move('back')">⬇️</button>
+        <button onclick="move('right')">➡️</button>
+        <br><button onclick="move('jump')">Jump</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        socket.on('bot_stats', (data) => {
+            document.getElementById('hp').innerText = data.health;
+            document.getElementById('food').innerText = data.food;
+            document.getElementById('inv').innerText = data.inventory;
+            document.getElementById('time').innerText = data.time;
+        });
+
+        socket.on('game_chat', (data) => {
+            const div = document.createElement('div');
+            div.innerHTML = `<b>${data.username}:</b> ${data.message}`;
+            document.getElementById('chat-box').appendChild(div);
+            document.getElementById('chat-box').scrollTop = 9999;
+        });
+
+        function sendChat() {
+            const val = document.getElementById('msgInput').value;
+            socket.emit('send_chat', val);
+            document.getElementById('msgInput').value = '';
+        }
+
+        function move(dir) {
+            socket.emit('move', dir);
+        }
+    </script>
+</body>
+</html>
