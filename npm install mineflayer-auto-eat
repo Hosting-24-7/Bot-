@@ -1,0 +1,9 @@
+const autoeat = require('mineflayer-auto-eat').plugin;
+
+bot.loadPlugin(autoeat);
+
+bot.on('health', () => {
+  if (bot.food < 15) {
+    bot.autoEat.eat(); // Bot apne aap inventory se khana khayega
+  }
+});
