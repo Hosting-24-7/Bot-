@@ -23,19 +23,37 @@ function createBot() {
         console.log("Bot spawned in the server!");
     });
 
-    // Dashboard ko real-time data bhejna
+    function createBot() {
+    bot = mineflayer.createBot(botArgs);
+
+    bot.on('spawn', () => {
+        console.log("Bot spawned in the server!");
+    });
+
+    // --- YE PURANE WALE KI JAGAH PASTE KAREIN (Line 26-38) ---
     setInterval(() => {
         if (bot.entity) {
+            const items = bot.inventory.items().map(item => {
+                return `${item.displayName} x ${item.count}`;
+            });
+
             io.emit('bot_stats', {
                 health: Math.round(bot.health),
                 food: Math.round(bot.food),
-                inventory: bot.inventory.items().length,
+                inventoryList: items, 
                 name: bot.username,
-                pos: bot.entity.position,
+                pos: `X: ${Math.round(bot.entity.position.x)}, Z: ${Math.round(bot.entity.position.z)}`,
                 time: new Date().toLocaleTimeString()
             });
         }
     }, 1000);
+    // -------------------------------------------------------
+
+    bot.on('chat', (username, message) => {
+        io.emit('game_chat', { username, message });
+    });
+
+    // ... baaki niche ka code same rahega
 
     bot.on('chat', (username, message) => {
         io.emit('game_chat', { username, message });
